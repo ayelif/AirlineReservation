@@ -9,17 +9,21 @@ public class Reader extends Thread {
         this.seat = seat;
     }
 
+    public void queryReservation() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        System.out.println("Date: " + currentTime.toLocalDate() + " Time: " + currentTime.toLocalTime() + " " + getName() + " kontrol ediyor: " + seat + " - Durumu: " +
+                (system.isSeatAvailable(seat) ? "Boş" : "Dolu"));
+        System.out.println();
+        System.out.println("Koltukların durumu:");
+        System.out.println(system.getSeatStatus());
+        System.out.println("------------------------------------------------------");
+    }
+
     @Override
     public void run() {
         try {
             Thread.sleep((int) (Math.random() * 1000));
-            LocalDateTime currentTime = LocalDateTime.now();
-            System.out.println("Date: " + currentTime.toLocalDate() + " Time: " + currentTime.toLocalTime() + " " + getName() + " kontrol ediyor: " + seat + " - Durumu: " +
-                    (system.isSeatAvailable(seat) ? "Boş" : "Dolu"));
-            System.out.println();
-            System.out.println("Koltukların durumu:");
-            System.out.println(system.getSeatStatus());
-            System.out.println("------------------------------------------------------");
+            queryReservation();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

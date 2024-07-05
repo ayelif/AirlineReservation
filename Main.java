@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 
 public class Main {
@@ -26,10 +25,11 @@ public class Main {
                 new Reader(system, seat).start();
             }
 
-            // Her koltuk için birden fazla yazma thread'i oluştur
+            // Her koltuk için yazma thread'leri oluştur (makeReservation ve cancelReservation)
             for (String seat : seats) {
                 for (int i = 0; i < 3; i++) {  // Yarış durumunu göstermek için yazma thread'lerini arttır
-                    new Writer(system, seat).start();
+                    new Writer(system, seat, true).start(); // makeReservation
+                    new Writer(system, seat, false).start(); // cancelReservation
                 }
             }
 
@@ -46,13 +46,9 @@ public class Main {
             }
             System.out.println(system.getSeatStatus());
             System.out.println("------------------------------------------------------");
-            
         }
 
         scanner.close();
         System.out.println("Program sonlandı.");
     }
 }
-
-
-

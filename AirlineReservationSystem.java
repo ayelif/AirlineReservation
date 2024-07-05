@@ -9,7 +9,7 @@ public class AirlineReservationSystem {
 
     public AirlineReservationSystem(boolean isSynchronized) {
         this.isSynchronized = isSynchronized;
-        seats = new LinkedHashMap<>(); // LinkedHashMap kullanıldı
+        seats = new LinkedHashMap<>();
         for (int i = 1; i <= 5; i++) {
             seats.put("koltuk_" + i, false); // false = boş, true = rezerve
         }
@@ -28,7 +28,7 @@ public class AirlineReservationSystem {
         }
     }
 
-    public boolean reserveSeat(String seat) {
+    public boolean makeReservation(String seat) {
         if (isSynchronized) {
             lock.writeLock().lock();
             try {
@@ -41,14 +41,34 @@ public class AirlineReservationSystem {
                 lock.writeLock().unlock();
             }
         } else {
-            // Asenkron modda kilitleme mekanizması kullanmadan
             if (!seats.getOrDefault(seat, true)) {
-                // Koltuğu rezerve edelim
                 seats.put(seat, true);
                 return true;
             } else {
-                // doğrudan rezerve edilsin (asenkron modda yarışı göstermek için)
                 seats.put(seat, true);
+                return true;
+            }
+        }
+    }
+
+    public boolean cancelReservation(String seat) {
+        if (isSynchronized) {
+            lock.writeLock().lock();
+            try {
+                if (isSeatAvailable(seat)) {
+                    return false;
+                }
+                seats.put(seat, false);
+                return true;
+            } finally {
+                lock.writeLock().unlock();
+            }
+        } else {
+            if (seats.getOrDefault(seat, false)) {
+                seats.put(seat, false);
+                return true;
+            } else {
+                seats.put(seat, false);
                 return true;
             }
         }
@@ -61,5 +81,4 @@ public class AirlineReservationSystem {
         });
         return status.toString();
     }
-
 }
